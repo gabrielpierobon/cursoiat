@@ -124,7 +124,7 @@ def main():
     print("*  paciente, ayudándole a explorar sus propios pensamientos y sentimientos sin")
     print("*  juzgar ni dirigir.")
     print("*" + "*" * 71)
-    print("\nELIZA: Hola, soy tu psicoterapeuta. ¿En qué puedo ayudarte hoy?")
+    print("\nELIZA: Hola, soy tu psicoterapeuta. ¿Cómo te sientes hoy?")
     print("(Para terminar la conversación, escribe 'adios' o 'salir')\n")
     
     while True:
