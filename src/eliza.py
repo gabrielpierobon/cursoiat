@@ -1,5 +1,6 @@
 import re
 import random
+import time
 
 class Eliza:
     def __init__(self):
@@ -94,6 +95,7 @@ class Eliza:
         ]
 
     def responder(self, entrada):
+        time.sleep(2)
         if not entrada.strip():
             return "Por favor, dime algo."
             
