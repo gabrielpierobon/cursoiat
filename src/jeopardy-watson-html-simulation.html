@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeopardy: Tú vs Watson</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .game-board {
+            background-color: #060CE9;
+            color: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            width: 600px;
+        }
+        h1 {
+            text-align: center;
+            color: #FFCC00;
+        }
+        .scores {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .categories, .questions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        button {
+            background-color: #FFCC00;
+            color: #060CE9;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #FFD700;
+        }
+        .question-display, .answer-input, .result-display {
+            background-color: #FFFFFF;
+            color: #060CE9;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-board">
+        <h1>Jeopardy: Tú vs Watson</h1>
+        <div class="scores">
+            <span>Tu puntuación: <span id="userScore">0</span></span>
+            <span>Puntuación de Watson: <span id="watsonScore">0</span></span>
+        </div>
+        <div id="categorySelection" class="categories">
+            <button onclick="selectCategory('Ciencia')">Ciencia</button>
+            <button onclick="selectCategory('Historia')">Historia</button>
+            <button onclick="selectCategory('Tecnología')">Tecnología</button>
+        </div>
+        <div id="questionSelection" class="questions hidden">
+            <button onclick="selectQuestion(0)">$200</button>
+            <button onclick="selectQuestion(1)">$400</button>
+            <button onclick="selectQuestion(2)">$600</button>
+        </div>
+        <div id="questionDisplay" class="question-display hidden">
+            <p id="currentQuestion"></p>
+            <input type="text" id="userAnswer" placeholder="¿Qué es...?">
+            <button onclick="submitAnswer()">Enviar Respuesta</button>
+        </div>
+        <div id="resultDisplay" class="result-display hidden">
+            <p>Pregunta: <span id="askedQuestion"></span></p>
+            <p>Respuesta correcta: <span id="correctAnswer"></span></p>
+            <p>Tu respuesta: <span id="userAnswerDisplay"></span></p>
+            <p>Respuesta de Watson: <span id="watsonAnswer"></span></p>
+            <button onclick="nextQuestion()">Siguiente Pregunta</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = {
+            'Ciencia': [
+                { q: "Formuló las leyes del movimiento planetario", a: "¿Quién es Kepler?", v: 200 },
+                { q: "Elemento químico más abundante en el universo", a: "¿Qué es el Hidrógeno?", v: 400 },
+                { q: "Número de huesos en el cuerpo humano adulto", a: "¿Qué son 206?", v: 600 }
+            ],
+            'Historia': [
+                { q: "Año en que Cristóbal Colón llegó a América", a: "¿Qué es 1492?", v: 200 },
+                { q: "Imperio que construyó Machu Picchu", a: "¿Qué es el Imperio Inca?", v: 400 },
+                { q: "Líder de la Revolución Rusa de 1917", a: "¿Quién es Lenin?", v: 600 }
+            ],
+            'Tecnología': [
+                { q: "Cofundador de Apple junto a Steve Jobs", a: "¿Quién es Wozniak?", v: 200 },
+                { q: "Lenguaje de programación creado por Guido van Rossum", a: "¿Qué es Python?", v: 400 },
+                { q: "Año de lanzamiento del primer iPhone", a: "¿Qué es 2007?", v: 600 }
+            ]
+        };
+
+        let currentCategory;
+        let currentQuestion;
+        let userScore = 0;
+        let watsonScore = 0;
+
+        function selectCategory(category) {
+            currentCategory = category;
+            document.getElementById('categorySelection').classList.add('hidden');
+            document.getElementById('questionSelection').classList.remove('hidden');
+        }
+
+        function selectQuestion(index) {
+            currentQuestion = questions[currentCategory][index];
+            document.getElementById('questionSelection').classList.add('hidden');
+            document.getElementById('questionDisplay').classList.remove('hidden');
+            document.getElementById('currentQuestion').textContent = currentQuestion.q;
+        }
+
+        function submitAnswer() {
+            const userAnswer = document.getElementById('userAnswer').value;
+            const correctAnswer = currentQuestion.a.toLowerCase();
+            const userCorrect = userAnswer.toLowerCase() === correctAnswer;
+            const watsonCorrect = Math.random() > 0.1; // Watson tiene 90% de probabilidad de acertar
+
+            if (userCorrect) userScore += currentQuestion.v;
+            if (watsonCorrect) watsonScore += currentQuestion.v;
+
+            document.getElementById('userScore').textContent = userScore;
+            document.getElementById('watsonScore').textContent = watsonScore;
+
+            document.getElementById('questionDisplay').classList.add('hidden');
+            document.getElementById('resultDisplay').classList.remove('hidden');
+            document.getElementById('askedQuestion').textContent = currentQuestion.q;
+            document.getElementById('correctAnswer').textContent = currentQuestion.a;
+            document.getElementById('userAnswerDisplay').textContent = userAnswer || "(Sin respuesta)";
+            document.getElementById('watsonAnswer').textContent = watsonCorrect ? currentQuestion.a : "Error de Watson";
+        }
+
+        function nextQuestion() {
+            document.getElementById('resultDisplay').classList.add('hidden');
+            document.getElementById('categorySelection').classList.remove('hidden');
+            document.getElementById('userAnswer').value = '';
+        }
+    </script>
+</body>
+</html>
