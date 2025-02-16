@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificación de Chatbots - Teoría Expandida</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .scenario {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .answer {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #toggleAll {
+            background-color: #008CBA;
+        }
+        #screenshot {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>Clasificación de IA Bots, Asistentes Virtuales y Agentes AI</h1>
+    
+    <button id="toggleAll">Mostrar/Ocultar Todas las Respuestas</button>
+    <button id="screenshot">Capturar Pantalla</button>
+
+    <div id="cards"></div>
+
+    <script>
+        const scenarios = [
+            {
+                question: "Este chatbot puede gestionar múltiples formularios y procesos paso a paso, manteniendo el estado de cada transacción y validando la información ingresada. ¿Qué tipo de chatbot es más apropiado para estas tareas estructuradas?",
+                answer: "Asistente Virtual: Los Asistentes Virtuales pueden manejar flujos de conversación estructurados y validar entradas. Ej: guiar al usuario a través de un proceso de registro de cuenta paso a paso.\n\nNo es un IA Bot porque requiere mantener contexto entre pasos y validar datos complejos, superando la lógica rígida de reglas simples.\n\nNo es un Agente AI porque no requiere capacidad analítica profunda ni toma de decisiones autónomas - sigue un flujo predefinido aunque sea complejo."
+            },
+            {
+                question: "Este chatbot utiliza redes neuronales y otros algoritmos de aprendizaje profundo para mejorar continuamente su comprensión y capacidad de respuesta. Puede adaptarse a nuevas situaciones y mejorar su rendimiento sin necesidad de reprogramación manual. ¿Qué categoría de chatbot es más probable que posea estas características?",
+                answer: "Agente AI: Emplea deep learning para auto-optimizarse. Ej: mejora diagnósticos médicos analizando nuevos estudios clínicos automáticamente.\n\nNo es un IA Bot porque estos requieren actualizaciones manuales y tienen una lógica fija que no evoluciona con el uso.\n\nNo es un Asistente Virtual porque aunque estos usan NLP, no tienen capacidad de aprendizaje autónomo ni mejoran sin intervención humana."
+            },
+            {
+                question: "Al procesar las consultas de los usuarios, este chatbot utiliza técnicas básicas de procesamiento de lenguaje natural para identificar la intención del usuario y proporcionar una respuesta adecuada dentro de su dominio específico. Sin embargo, su comprensión se limita a patrones y estructuras de oraciones simples. ¿Qué tipo de chatbot es más probable que tenga estas capacidades limitadas de NLP?",
+                answer: "IA Bot: Ej: entiende 'restablecer contraseña' pero falla con 'no puedo entrar a mi cuenta, necesito nuevo acceso'.\n\nNo es un Asistente Virtual porque estos requieren NLP más avanzado para mantener contexto y manejar variaciones lingüísticas más complejas.\n\nNo es un Agente AI porque estos utilizan modelos de lenguaje avanzados capaces de entender consultas complejas y generar respuestas contextuales."
+            },
+            {
+                question: "Este chatbot está programado para entender y responder a un conjunto específico de comandos o preguntas. Aunque puede procesar variaciones menores en la forma en que se formulan las preguntas, no puede inferir la intención del usuario si la consulta se expresa de una manera significativamente diferente a lo que está programado para reconocer. ¿Qué tipo de chatbot muestra esta limitación en la comprensión del lenguaje natural?",
+                answer: "IA Bot: Ej: entiende 'reiniciar router' pero no 'el internet no funciona desde que parpadea la luz roja'.\n\nNo es un Asistente Virtual porque estos pueden manejar variaciones más significativas en la forma de expresar una intención gracias a su NLP más sofisticado.\n\nNo es un Agente AI porque estos pueden inferir intenciones incluso de consultas muy diferentes a las programadas originalmente."
+            },
+            {
+                question: "Durante una conversación, este chatbot es capaz de recordar detalles mencionados anteriormente y utilizarlos para proporcionar respuestas coherentes dentro de la misma sesión. ¿Qué tipo de chatbot demuestra esta capacidad?",
+                answer: "Asistente Virtual: Los Asistentes Virtuales mantienen el contexto durante una sesión para ofrecer respuestas más relevantes. Ej: recordar la talla y preferencias al buscar ropa durante una sesión de compra.\n\nNo es un IA Bot porque estos típicamente no mantienen contexto entre mensajes, tratando cada interacción de forma aislada.\n\nNo es un Agente AI porque aunque puede mantener contexto, esta capacidad por sí sola no requiere el nivel de análisis y autonomía característico de un Agente."
+            },
+            {
+                question: "Este chatbot no solo responde a las preguntas actuales del usuario, sino que también puede anticipar necesidades futuras basándose en patrones de comportamiento y datos históricos. Puede tomar decisiones proactivas y hacer sugerencias sin que el usuario las solicite explícitamente. ¿Qué tipo de chatbot demuestra estas capacidades avanzadas?",
+                answer: "Agente AI: Ej: sugiere automatizar pagos recurrentes tras detectar patrones de gastos mensuales similares.\n\nNo es un IA Bot porque estos solo responden a comandos directos y no tienen capacidad de análisis predictivo.\n\nNo es un Asistente Virtual porque aunque pueden usar datos históricos, no tienen la capacidad de análisis profundo y toma de decisiones autónoma necesaria para anticipar necesidades."
+            },
+            {
+                question: "Cuando un usuario hace una pregunta, este chatbot busca palabras clave específicas en la consulta y selecciona una respuesta predeterminada de su base de datos. No puede generar respuestas originales ni entender el contexto más allá de las palabras clave. ¿Qué tipo de chatbot es este?",
+                answer: "IA Bot: Ej: responde 'horario de atención' cuando detecta las palabras 'horario' o 'abierto', sin comprender consultas complejas sobre excepciones horarias.\n\nNo es un Asistente Virtual porque estos pueden entender el contexto y generar respuestas más dinámicas basadas en la situación específica.\n\nNo es un Agente AI porque estos pueden generar respuestas originales y comprender el contexto completo de la conversación."
+            },
+            {
+                question: "El chatbot permite a los usuarios personalizar varios aspectos de su interacción, como el tono de voz, el nivel de formalidad, e incluso el tipo de información que se muestra prioritariamente. Se adapta a las preferencias individuales del usuario. ¿Qué categoría de chatbot ofrece típicamente este nivel de personalización?",
+                answer: "Asistente Virtual: Ej: guarda preferencias como 'mostrar primero resultados veganos' en un asistente de recomendaciones gastronómicas.\n\nNo es un IA Bot porque estos tienen configuraciones fijas y no mantienen preferencias personalizadas entre sesiones.\n\nNo es un Agente AI porque aunque puede personalizar, esta característica por sí sola no requiere el nivel de autonomía y aprendizaje característico de un Agente."
+            },
+            {
+                question: "Este chatbot puede conectarse con diferentes APIs y sistemas externos para realizar tareas específicas como reservas, consultas de inventario o programación de citas. ¿Qué tipo de chatbot muestra esta capacidad de integración?",
+                answer: "Asistente Virtual: Los Asistentes Virtuales pueden integrarse con diversos sistemas externos para realizar tareas específicas. Ej: verificar disponibilidad de productos y procesar pagos en una tienda online.\n\nNo es un IA Bot porque estos típicamente tienen funcionalidades limitadas y no suelen integrarse con múltiples sistemas externos.\n\nNo es un Agente AI porque aunque puede integrarse con sistemas, esta capacidad por sí sola no requiere el nivel de autonomía y análisis característico de un Agente."
+            },
+            {
+                question: "Un chatbot está diseñado para responder a consultas de usuarios utilizando un conjunto predefinido de reglas y respuestas. No puede aprender de interacciones pasadas ni actualizar su base de conocimientos sin intervención externa. ¿Qué tipo de chatbot es probablemente?",
+                answer: "IA Bot: Los IA Bots típicamente operan con un conjunto fijo de reglas y respuestas predefinidas, lo que los hace adecuados para tareas específicas y bien definidas, pero limita su capacidad de adaptación o aprendizaje autónomo.\n\nNo es un Asistente Virtual porque estos pueden aprender y adaptarse basándose en interacciones previas y preferencias del usuario.\n\nNo es un Agente AI porque estos pueden actualizar automáticamente su base de conocimientos y mejorar con cada interacción."
+            },
+            {
+                question: "Este chatbot tiene la capacidad de recordar interacciones previas con un usuario específico y utilizar esa información para personalizar sus respuestas en futuras conversaciones dentro de la misma sesión. ¿Qué tipo de chatbot es más probable que sea?",
+                answer: "Asistente Virtual: Los Asistentes Virtuales pueden mantener el contexto de una sesión y personalizar respuestas según preferencias guardadas. Ej: recordar el idioma preferido o últimas consultas realizadas.\n\nNo es un IA Bot porque estos no mantienen memoria de interacciones previas ni personalizan respuestas.\n\nNo es un Agente AI porque aunque mantiene contexto, no realiza el análisis profundo ni toma decisiones autónomas características de un Agente."
+            },
+            {
+                question: "Un chatbot es capaz de acceder a múltiples bases de datos, analizar grandes volúmenes de información en tiempo real, y combinar estos datos para tomar decisiones complejas o proporcionar recomendaciones detalladas. ¿Qué categoría de chatbot es la más apropiada para estas capacidades?",
+                answer: "Agente AI: Los Agentes AI tienen la capacidad de procesar y analizar grandes cantidades de datos de diversas fuentes para tomar decisiones informadas y complejas, como cruzar datos de mercado en tiempo real para estrategias de inversión.\n\nNo es un IA Bot porque estos no tienen capacidad de análisis complejo ni pueden procesar grandes volúmenes de datos en tiempo real.\n\nNo es un Asistente Virtual porque aunque puede acceder a múltiples fuentes de datos, no tiene la capacidad de análisis profundo y toma de decisiones autónoma necesaria."
+            },
+            {
+                question: "Este chatbot está diseñado para funcionar exclusivamente en un área específica, como atención al cliente para una tienda en línea. Tiene un conocimiento profundo pero limitado a ese dominio y no puede manejar consultas fuera de su área de especialización. ¿Qué tipo de chatbot es más probable que sea?",
+                answer: "IA Bot: Los IA Bots suelen estar diseñados para dominios específicos con bases de conocimiento estáticas. Ej: chatbot de restaurante que solo maneja menús y reservas.\n\nNo es un Asistente Virtual porque estos pueden manejar múltiples dominios y adaptar su comportamiento según el contexto.\n\nNo es un Agente AI porque estos pueden expandir su conocimiento a nuevos dominios y aplicar aprendizaje entre diferentes áreas."
+            },
+            {
+                question: "Cuando se enfrenta a un problema complejo, este chatbot puede descomponerlo en subproblemas, aplicar diferentes estrategias de resolución, y combinar los resultados para llegar a una solución. Utiliza una combinación de reglas lógicas, aprendizaje automático y razonamiento basado en casos para abordar problemas de manera similar a un experto humano. ¿Qué tipo de chatbot demuestra este nivel avanzado de resolución de problemas?",
+                answer: "Agente AI: Ej: diagnostica fallas técnicas combinando manuales, datos de sensores en tiempo real y casos históricos similares.\n\nNo es un IA Bot porque estos siguen reglas simples y no pueden descomponer problemas complejos ni combinar diferentes estrategias de resolución.\n\nNo es un Asistente Virtual porque aunque puede seguir procesos estructurados, no tiene la capacidad de razonamiento avanzado y resolución creativa de problemas."
+            },
+            {
+                question: "Cuando se enfrenta a una pregunta que está fuera de su base de conocimientos predefinida, este chatbot responde con un mensaje genérico de 'No entiendo' o 'No puedo ayudar con eso'. No tiene la capacidad de buscar información adicional o redirigir la consulta. ¿Qué tipo de chatbot muestra estas limitaciones?",
+                answer: "IA Bot: Ej: chatbot de banco que no puede responder preguntas sobre seguros si no están en su script.\n\nNo es un Asistente Virtual porque estos pueden redirigir consultas o buscar información en diferentes fuentes cuando encuentran algo fuera de su conocimiento principal.\n\nNo es un Agente AI porque estos pueden buscar activamente nueva información y aprender de consultas desconocidas para mejorar su base de conocimientos."
+            }
+        ];
+
+        function createCards() {
+            const cardsContainer = document.getElementById('cards');
+            
+            scenarios.forEach((scenario, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="scenario">${index + 1}. ${scenario.question}</div>
+                    <button onclick="toggleAnswer(this)">Mostrar Respuesta</button>
+                    <div class="answer">${scenario.answer}</div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        function toggleAnswer(button) {
+            var answer = button.nextElementSibling;
+            if (answer.style.display === "none" || answer.style.display === "") {
+                answer.style.display = "block";
+                button.textContent = "Ocultar Respuesta";
+            } else {
+                answer.style.display = "none";
+                button.textContent = "Mostrar Respuesta";
+            }
+        }
+
+        document.getElementById('toggleAll').addEventListener('click', function() {
+            var answers = document.getElementsByClassName('answer');
+            var buttons = document.getElementsByTagName('button');
+            var isHidden = answers[0].style.display === "none" || answers[0].style.display === "";
+            
+            for (var i = 0; i < answers.length; i++) {
+                answers[i].style.display = isHidden ? "block" : "none";
+            }
+            
+            for (var i = 0; i < buttons.length; i++) {
+                if (buttons[i].textContent.includes("Respuesta")) {
+                    buttons[i].textContent = isHidden ? "Ocultar Respuesta" : "Mostrar Respuesta";
+                }
+            }
+        });
+
+        document.getElementById('screenshot').addEventListener('click', function() {
+            html2canvas(document.body).then(function(canvas) {
+                var link = document.createElement('a');
+                link.download = 'clasificacion_chatbots_teoria_expandida.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+
+        createCards();
+    </script>
+</body>
+</html>

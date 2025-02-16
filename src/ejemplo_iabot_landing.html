@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia de Inteligencia Artificial</title>
+    <style>
+        /* Estilos generales */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #2563eb;
+            padding: 1rem 2rem;
+            color: white;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Hero section */
+        .hero {
+            background-color: #f3f4f6;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #4b5563;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Cursos section */
+        .cursos {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .cursos h2 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 2rem;
+        }
+
+        .cursos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .curso-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+        }
+
+        .curso-card h3 {
+            color: #2563eb;
+            margin-top: 0;
+        }
+
+        .curso-card p {
+            color: #4b5563;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        /* Chatbot styles (anteriores) */
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .chat-header {
+            background: #2563eb;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            max-width: 85%;
+            padding: 8px 12px;
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+
+        .bot-message {
+            background: #f3f4f6;
+            margin-right: auto;
+        }
+
+        .user-message {
+            background: #2563eb;
+            color: white;
+            margin-left: auto;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+
+        .chat-input button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .chat-input button:hover {
+            background: #1d4ed8;
+        }
+
+        .minimize-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .chat-container.minimized {
+            height: 60px;
+        }
+
+        .chat-container.minimized .chat-messages,
+        .chat-container.minimized .chat-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">Academia IA</div>
+            <div class="nav-links">
+                <a href="#">Inicio</a>
+                <a href="#">Cursos</a>
+                <a href="#">Sobre Nosotros</a>
+                <a href="#">Contacto</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Formación en Inteligencia Artificial</h1>
+        <p>Aprende las tecnologías más demandadas del mercado con expertos en el campo de la IA</p>
+    </section>
+
+    <!-- Cursos Section -->
+    <section class="cursos">
+        <h2>Nuestros Cursos</h2>
+        <div class="cursos-grid">
+            <div class="curso-card">
+                <h3>Machine Learning Básico</h3>
+                <p>Aprende los fundamentos del aprendizaje automático y comienza tu carrera en IA.</p>
+            </div>
+            <div class="curso-card">
+                <h3>Deep Learning Avanzado</h3>
+                <p>Domina las redes neuronales y los modelos más avanzados de IA.</p>
+            </div>
+            <div class="curso-card">
+                <h3>Procesamiento de Lenguaje Natural</h3>
+                <p>Desarrolla aplicaciones capaces de entender y procesar el lenguaje humano.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 Academia IA. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Chatbot -->
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <span>Asistente de Registro</span>
+            <button class="minimize-btn" onclick="toggleChat()">−</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+        </div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Escribe tu mensaje..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <!-- Chatbot Script (mismo código JavaScript anterior) -->
+    <script>
+        // [Aquí va el mismo código JavaScript del chatbot que teníamos antes]
+        class RegistroBot {
+            constructor() {
+                this.estadoActual = 'inicio';
+                this.esperandoSaludo = true;
+                this.datosUsuario = {
+                    nombre: '',
+                    apellido: '',
+                    edad: '',
+                    email: ''
+                };
+
+                this.respuestasError = {
+                    nombre: "Lo siento, el nombre solo debe contener letras. Por favor, intente nuevamente.",
+                    apellido: "Lo siento, el apellido solo debe contener letras. Por favor, intente nuevamente.",
+                    edad: "Por favor, ingrese una edad válida entre 18 y 99 años.",
+                    email: "Por favor, ingrese un email válido.",
+                    general: "No entiendo su respuesta. Por favor, siga las instrucciones."
+                };
+            }
+
+            validarNombre(texto) {
+                return /^[A-Za-zÁ-Úá-úñÑ\s]{2,30}$/.test(texto);
+            }
+
+            validarEdad(texto) {
+                const edad = parseInt(texto);
+                return !isNaN(edad) && edad >= 18 && edad <= 99;
+            }
+
+            validarEmail(texto) {
+                return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(texto);
+            }
+
+            mostrarResumen() {
+                return `Por favor, confirme si los siguientes datos son correctos:
+                Nombre: ${this.datosUsuario.nombre}
+                Apellido: ${this.datosUsuario.apellido}
+                Edad: ${this.datosUsuario.edad}
+                Email: ${this.datosUsuario.email}
+
+                ¿Los datos son correctos? (si/no)`;
+            }
+
+            procesarEstado(entrada) {
+                if (this.esperandoSaludo) {
+                    this.esperandoSaludo = false;
+                    return [
+                        "¡Hola! Soy el asistente de registro para el curso de IA.",
+                        "Para comenzar el proceso de inscripción, necesitaré algunos datos.",
+                        "Por favor, ingrese su nombre:"
+                    ];
+                }
+
+                switch(this.estadoActual) {
+                    case 'inicio':
+                        this.estadoActual = 'pedir_nombre';
+                        if (this.validarNombre(entrada)) {
+                            this.datosUsuario.nombre = entrada;
+                            this.estadoActual = 'pedir_apellido';
+                            return ["Gracias. Ahora, por favor ingrese su apellido:"];
+                        }
+                        return [this.respuestasError.nombre];
+
+                    case 'pedir_nombre':
+                        if (this.validarNombre(entrada)) {
+                            this.datosUsuario.nombre = entrada;
+                            this.estadoActual = 'pedir_apellido';
+                            return ["Gracias. Ahora, por favor ingrese su apellido:"];
+                        }
+                        return [this.respuestasError.nombre];
+
+                    case 'pedir_apellido':
+                        if (this.validarNombre(entrada)) {
+                            this.datosUsuario.apellido = entrada;
+                            this.estadoActual = 'pedir_edad';
+                            return ["¿Cuál es su edad?"];
+                        }
+                        return [this.respuestasError.apellido];
+
+                    case 'pedir_edad':
+                        if (this.validarEdad(entrada)) {
+                            this.datosUsuario.edad = entrada;
+                            this.estadoActual = 'pedir_email';
+                            return ["Por favor, ingrese su dirección de email:"];
+                        }
+                        return [this.respuestasError.edad];
+
+                    case 'pedir_email':
+                        if (this.validarEmail(entrada)) {
+                            this.datosUsuario.email = entrada;
+                            this.estadoActual = 'confirmar_datos';
+                            return [this.mostrarResumen()];
+                        }
+                        return [this.respuestasError.email];
+
+                    case 'confirmar_datos':
+                        if (entrada.toLowerCase() === 'si') {
+                            this.estadoActual = 'despedida';
+                            return ["¡Excelente! Sus datos han sido registrados correctamente."];
+                        } else if (entrada.toLowerCase() === 'no') {
+                            this.estadoActual = 'inicio';
+                            this.datosUsuario = {nombre: '', apellido: '', edad: '', email: ''};
+                            return ["Entiendo. Comenzaremos el proceso nuevamente."];
+                        }
+                        return ["Por favor, responda 'si' o 'no'."];
+
+                    case 'despedida':
+                        return [
+                            "Gracias por registrarse en nuestro curso.",
+                            "Recibirá un email con las instrucciones para comenzar.",
+                            "¡Que tenga un excelente día!"
+                        ];
+                }
+            }
+        }
+
+        // Inicializar el bot
+        const bot = new RegistroBot();
+
+        function addMessage(text, className) {
+            const messages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${className}`;
+            messageDiv.textContent = text;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+
+            // Añadir mensaje del usuario
+            addMessage(message, 'user-message');
+            
+            // Procesar respuesta del bot
+            const respuestas = bot.procesarEstado(message);
+            setTimeout(() => {
+                respuestas.forEach(respuesta => {
+                    addMessage(respuesta, 'bot-message');
+                });
+            }, 500);
+
+            input.value = '';
+        }
+
+        function handleKeyPress(event) {
+            if (event.keyCode === 13) {
+                sendMessage();
+            }
+        }
+
+        function toggleChat() {
+            const container = document.getElementById('chatContainer');
+            const button = document.querySelector('.minimize-btn');
+            container.classList.toggle('minimized');
+            button.textContent = container.classList.contains('minimized') ? '+' : '−';
+        }
+
+        // Mostrar mensaje inicial
+        bot.procesarEstado('').forEach(mensaje => {
+            addMessage(mensaje, 'bot-message');
+        });
+    </script>
+</body>
+</html>
