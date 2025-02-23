@@ -31,7 +31,7 @@ in English for better organization, but make all training phrases and responses 
 ## Part 1: Creating Basic Intents
 
 ### 1. Welcome Intent
-First, modify the Default Welcome Intent. This is a crucial first step as it sets the tone for your entire chatbot interaction.
+First, modify the Default Welcome Intent:
 
 Training Phrases (in Spanish):
 - Hola
@@ -43,33 +43,41 @@ Training Phrases (in Spanish):
 Response:
 - "¡Bienvenido a [Nombre del Restaurante]! ¿En qué puedo ayudarle hoy?"
 
+#### Understanding Intent Detection Confidence
+
+After setting up these training phrases, you can test how Dialogflow's Natural Language Understanding (NLU) works with variations. Try these example inputs in the test console:
+
 ```text
-🔍 Testing Checkpoint #1:
-Before moving forward, let's test what we've built:
-
-1. Try entering variations of greetings not listed in the training phrases:
-   - "Buenas noches"
-   - "Hola, buenos días"
-   - "Buen día"
-   Does your chatbot recognize these as greetings?
-
-2. Try entering the same phrases with different punctuation or capitalization:
-   - "HOLA"
-   - "buenos dias" (without accent)
-   - "¿¿Están abiertos??"
-   How does your chatbot handle these variations?
-
-3. Enter a greeting in a complete sentence:
-   - "Hola, quisiera saber si tienen mesa disponible"
-   Does your chatbot still recognize this as a greeting?
-
-💡 Improvement Tips:
-- If any of these tests failed, add those variations to your training phrases
-- Consider adding regional Spanish greetings based on your target audience
-- Remember that users might combine greetings with their intent to make a reservation
+Test Phrases:
+- "Hola buenos días"           (Combination of greetings)
+- "Buenas, ¿qué tal?"         (Informal variation)
+- "Muy buenas"                (Shortened greeting)
+- "Hey, ¿están abiertos?"     (Mixed casual/formal)
 ```
 
+Important Learning Point:
+```text
+When you test these phrases, look at the JSON response in the Dialogflow console. 
+You'll find a "confidence" score that shows how sure the model is about matching 
+the input to this intent. For example:
 
+{
+  "intent": {
+    "name": "Default Welcome Intent",
+    "displayName": "Default Welcome Intent",
+    "confidence": 0.92
+  }
+}
+
+- Scores above 0.8 indicate high confidence
+- Scores between 0.6-0.8 suggest moderate confidence
+- Scores below 0.6 might need additional training phrases
+```
+
+This understanding of confidence scores will help you:
+1. Identify when you need more training phrases
+2. Understand how Dialogflow handles variations
+3. Improve your intent recognition accuracy
 
 ### 2. Make Reservation Intent
 Create a new intent named "make_reservation":
@@ -82,562 +90,295 @@ Training Phrases:
 - ¿Puedo hacer una reservación?
 
 Response:
-- "Por supuesto. ¿Para cuántas personas necesita la reserva?"
+- "Por supuesto"
 
+#### Testing the Flow - Important Note for Students:
 ```text
-🔍 Testing Checkpoint #2: Party Size Recognition
-Test your chatbot's ability to understand different ways people might specify the number of guests:
+At this point, test the conversation flow to see how it works:
 
-1. Test numerical formats:
-   - "4 personas"
-   - "para 4"
-   - "somos 4"
-   - "una mesa para cuatro"
-   - "mesa para cuatro personas"
-   Does your chatbot correctly identify "4" as the number in all cases?
+1. User: "Quisiera hacer una reserva"
+   Bot: "Por supuesto"
 
-2. Test edge cases:
-   - "Solo yo" (single person)
-   - "Para mí y mi esposa" (implicit 2)
-   - "Venimos 2 adultos y 3 niños" (total 5)
-   - "Seremos una docena" (12 people)
-   Can your chatbot handle these natural expressions?
+Notice how this shorter, more natural response works better because:
+- It sounds more human-like
+- It doesn't immediately jump to asking for information
+- It gives a quick acknowledgment, similar to how a real host would respond
 
-3. Test problematic inputs:
-   - "No sé, entre 4 y 6 personas"
-   - "Quizás 5 o 6"
-   - "Muchas personas"
-   How does your chatbot handle uncertainty?
+The question about the number of people will come in the next intent through 
+the required parameters, creating a more natural back-and-forth conversation.
 
-💡 Pro Tips:
-- Consider adding more training phrases that capture these variations
-- Make sure your entity recognition can handle written numbers (cuatro) as well as digits (4)
-- Add follow-up prompts for unclear responses: "¿Me podría confirmar el número exacto de personas?"
-- Consider setting a maximum party size and adding appropriate responses for oversized groups
+Common Testing Scenarios to Try:
+- "Quiero reservar una mesa"
+- "¿Puedo hacer una reservación?"
+- "Necesito una mesa para esta noche"
 
-✏️ Your Task:
-Try these tests and note which ones fail. Add at least 5 new training phrases to handle the cases 
-that your chatbot didn't recognize correctly. Remember to retrain your model after adding new phrases!
+Watch how the bot consistently responds with just "Por supuesto", making the 
+conversation feel more natural before proceeding to collect details.
 ```
+
+#### Next Step - Parameter Collection:
+After this acknowledgment, we'll set up required parameters to collect reservation details. This separation of responses creates a more natural conversation flow.
 
 ## Part 2: Setting Up Entities
 
-Entities are the building blocks that help your chatbot extract specific information from user messages. Think of them as data collectors.
+## Understanding System Entities
 
-### 1. Understanding System Entities First
+Important: System entities (@sys.number, @sys.date, @sys.time) become available only when you:
+1. Create training phrases in your intents
+2. Highlight/annotate the relevant parts
+3. Map them to the corresponding system entity
 
-Before we create any entities, let's look at what Dialogflow gives us for free. In your Dialogflow console:
+Let's set this up step by step:
 
-1. Go to the Entities section in the left sidebar
-2. Click on "System Entities"
-3. Enable these three essential entities by clicking their checkboxes:
-   - @sys.number
-   - @sys.date
-   - @sys.time
+### 1. Number of People Entity (@sys.number)
 
-```text
-🔍 Quick Activity:
-Find these system entities in your console. Notice how many other system entities 
-are available! We'll focus on just these three for now, but keep the others in mind 
-for future projects.
-```
-
-### 2. Working with @sys.number (Party Size)
-
-This entity automatically recognizes numbers in various formats. Let's see how to use it:
-
-1. Open your "make_reservation" intent
-2. In the "Action and parameters" section:
-   - Add a parameter named "party_size"
-   - Set its entity type to "@sys.number"
-   - Mark it as "Required"
-   - Add a prompt: "¿Para cuántas personas necesita la reserva?"
+In your `make_reservation` intent, add these training phrases and map the numbers:
 
 ```text
-🔍 Testing Activity #1:
-Try these phrases in your testing console and watch how Dialogflow detects the numbers:
-- "Quiero reservar para 5 personas"
-- "Necesito una mesa para ocho"
-- "Somos tres"
-
-Is your chatbot correctly identifying the numbers? If not, annotate these examples:
-1. Select the number in each training phrase
-2. Assign it to the @sys.number entity
-3. Save and retrain
+Training Phrases:
+- "Necesito una mesa para cinco personas"
+             (highlight "cinco" → @sys.number)
+- "Somos 4"
+        (highlight "4" → @sys.number)
+- "Quiero reservar para 8 personas"
+                      (highlight "8" → @sys.number)
+- "Una mesa para dos"
+                (highlight "dos" → @sys.number)
 ```
 
-### 3. Working with @sys.date (Reservation Date)
+### 2. Date Entity (@sys.date)
 
-The date entity recognizes various date formats and relative dates. Set it up:
-
-1. In your "make_reservation" intent
-2. Add a new parameter named "reservation_date"
-3. Set its entity type to "@sys.date"
-4. Mark as "Required"
-5. Add prompt: "¿Para qué día desea hacer la reserva?"
+Add these phrases and map the dates:
 
 ```text
-🔍 Testing Activity #2:
-Test these date formats:
-- "Quiero reservar para mañana"
-- "Para el 15 de marzo"
-- "Este viernes"
-- "El próximo martes"
-- "Para hoy en la noche"
-
-💡 Note: If some formats aren't working, check your Dialogflow language settings 
-are set to Spanish!
+- "Quisiera reservar para mañana"
+                        (highlight "mañana" → @sys.date)
+- "¿Tienen mesa para el 15 de julio?"
+                        (highlight "15 de julio" → @sys.date)
+- "Para este viernes"
+           (highlight "este viernes" → @sys.date)
 ```
 
-### 4. Working with @sys.time (Reservation Time)
+### 3. Time Entity (@sys.time)
 
-Time recognition works similarly to dates:
-
-1. Add parameter "reservation_time"
-2. Set entity type to "@sys.time"
-3. Mark as "Required"
-4. Add prompt: "¿A qué hora le gustaría la reserva?"
+Add these phrases and map the times:
 
 ```text
-🔍 Testing Activity #3:
-Test these time formats:
-- "A las 8 de la noche"
-- "3:30 PM"
-- "15:00 horas"
-- "Al mediodía"
-- "A las ocho y media"
-
-💡 Pro Tip: Watch how Dialogflow converts these to 24-hour format automatically!
+- "Quiero reservar para las 8 de la noche"
+                           (highlight "8 de la noche" → @sys.time)
+- "¿Hay mesa a las 14:30?"
+                 (highlight "14:30" → @sys.time)
+- "Para las nueve y media"
+           (highlight "nueve y media" → @sys.time)
 ```
 
-### 5. Creating a Custom Entity (Table Location)
-
-Now let's create our own entity for table preferences:
-
-1. Click "Create Entity" in the Entities section
-2. Name it "table_location"
-3. Set up your values as follows:
+#### Steps to Map System Entities:
+1. In your intent, enter a training phrase
+2. Highlight the relevant text (number, date, or time)
+3. In the entity dropdown that appears, select the appropriate @sys entity
+4. Dialogflow will then recognize similar patterns in future user inputs
 
 ```text
-Reference Value: interior
-Synonyms:
-- adentro
-- dentro
-- sala principal
-- en el interior
-- área interior
+Important Testing Note:
+After mapping these entities, test with variations to see how Dialogflow handles them:
 
-Reference Value: terraza
-Synonyms:
-- afuera
-- exterior
-- al aire libre
-- área externa
-- en la terraza
+Numbers:
+- "2 personas" vs "dos personas"
+- "5" vs "cinco"
 
-Reference Value: barra
-Synonyms:
-- bar
-- área del bar
-- en la barra
-- junto a la barra
+Dates:
+- "mañana" vs "el 24 de febrero"
+- "este sábado" vs "el fin de semana"
+
+Times:
+- "3 pm" vs "15:00"
+- "ocho de la noche" vs "20:00"
 ```
 
-4. In your "make_reservation" intent:
-   - Add parameter "seating_preference"
-   - Set type to "@table_location"
-   - Make it optional (don't check Required)
-   - Add prompt: "¿Prefiere sentarse en el interior, en la terraza o en la barra?"
+Remember: The system entities only become functional after you've properly mapped them in your training phrases. The more variations you include in your training phrases, the better Dialogflow will understand different ways users might express numbers, dates, and times.
 
-```text
-🔍 Final Testing Activity:
-Test complete reservation phrases:
-1. "Quiero reservar una mesa para 4 personas mañana a las 8 en la terraza"
-2. "Mesa para 2 este viernes a las 3 en el interior"
-3. "Reservación para 6 el sábado al mediodía en la barra"
+### 4. Custom Entity: Table Location
+Create a new entity named "table_location":
 
-Your chatbot should extract:
-- Number of people (@sys.number)
-- Date (@sys.date)
-- Time (@sys.time)
-- Location preference (@table_location)
-
-💡 Debug Tips:
-- If any entity isn't being recognized, try annotating it manually in your training phrases
-- Add more training phrases with different combinations
-- Remember to save and retrain after making changes
-```
-
-### 6. Putting It All Together
-
-Now in your intent's response section, you can use these entities:
-
-```text
-"Perfecto. Confirmando su reserva:
-- Para $party_size personas
-- El día $reservation_date
-- A las $reservation_time
-- $seating_preference
-¿Es esto correcto?"
-```
-
-```text
-🎯 Final Challenge:
-Create 5 new training phrases that combine all entities in different ways. 
-Make sure your chatbot can extract all the information correctly!
-```
+Values:
+- interior
+  - Synonyms: adentro, dentro, sala principal
+- terraza
+  - Synonyms: afuera, exterior, al aire libre
+- barra
+  - Synonyms: bar, área del bar
 
 ## Part 3: Creating the Reservation Flow
 
-In this section, we'll create a natural conversation flow for making reservations. Think of it like a tree with branches for different user responses.
+### Step 1: Initial Reservation Intent
+Intent Name: `make_reservation`
 
-### Step 1: Setting Up the Main Reservation Intent
+Required Parameters:
+1. people (number)
+2. date
+3. time
+4. location (optional)
 
-First, let's create the core intent that handles reservation requests:
+Parameter Prompts:
+Add multiple response variations for each parameter to make conversations feel more natural and less robotic.
 
-1. In Dialogflow console, click "Create Intent"
-2. Name it "make_reservation"
-3. Add Training Phrases (click '+' for each):
-   ```text
-   Quiero hacer una reserva
-   Necesito una mesa
-   ¿Tienen disponibilidad?
-   Quisiera reservar
-   Para hacer una reservación
-   ```
-
+people:
 ```text
-🔍 Quick Check:
-Test these phrases in your console. Is your intent being triggered? 
-Add any variations that you think users might say!
+Response Variations:
+1. "¿Para cuántas personas necesita la reserva?"
+2. "¿Cuántos comensales serán?"
+3. "¿Cuántas personas van a venir?"
 ```
 
-### Step 2: Setting Up Required Parameters
-
-Now we'll tell our chatbot what information it needs to collect. In your make_reservation intent:
-
-1. Scroll to "Action and parameters"
-2. Click "Add Parameters" and set up each one:
-
-   a) For Party Size:
-   ```text
-   Parameter Name: people
-   Entity: @sys.number
-   Required: ✓
-   Prompt: ¿Para cuántas personas necesita la reserva?
-   ```
-
-   b) For Date:
-   ```text
-   Parameter Name: date
-   Entity: @sys.date
-   Required: ✓
-   Prompt: ¿Qué día le gustaría venir?
-   ```
-
-   c) For Time:
-   ```text
-   Parameter Name: time
-   Entity: @sys.time
-   Required: ✓
-   Prompt: ¿A qué hora prefiere su reserva?
-   ```
-
-   d) For Location:
-   ```text
-   Parameter Name: location
-   Entity: @table_location
-   Required: ⃞ (leave unchecked)
-   Prompt: ¿Prefiere sentarse en el interior, en la terraza o en la barra?
-   ```
-
+date:
 ```text
-🔍 Testing Activity #1:
-Try these test conversations:
-1. "Quiero reservar una mesa"
-   → Bot should ask for number of people
-2. "Quiero reservar para 4 personas"
-   → Bot should ask for date
-3. "Quiero reservar mañana"
-   → Bot should ask for time
-
-Is your bot asking for missing information in a natural way?
+Response Variations:
+1. "¿Qué día le gustaría venir?"
+2. "¿Para qué fecha desea hacer la reserva?"
+3. "¿Cuándo le gustaría visitarnos?"
 ```
 
-### Step 3: Creating the Final Confirmation Message
-
-In the "Responses" section of make_reservation:
-
-1. Click "Add Response"
-2. Enter this template:
+time:
 ```text
-Muy bien, entonces sería:
-- Reserva para $people personas
-- Para el día $date
-- A las $time
-${location ? '- Ubicación: ' + location : ''}
-
-¿Desea confirmar esta reserva?
+Response Variations:
+1. "¿A qué hora prefiere su reserva?"
+2. "¿A qué hora le gustaría venir?"
+3. "¿Qué horario le vendría mejor?"
 ```
 
+location:
 ```text
-💡 Pro Tip:
-The ${location ? '...' : ''} syntax means the location will only be shown 
-if the user specified one!
+Response Variations:
+1. "¿Prefiere sentarse en el interior, en la terraza o en la barra?"
+2. "¿Dónde le gustaría sentarse: interior, terraza o barra?"
+3. "¿Tiene alguna preferencia de ubicación? Tenemos interior, terraza y barra disponibles."
 ```
 
-### Step 4: Setting Up Follow-up Intents
-
-Now we'll handle the user's response to our confirmation question:
-
-#### A) Creating the Confirmation Intent
-
-1. Click the three dots next to make_reservation
-2. Select "Add follow-up intent"
-3. Choose "yes"
-4. Rename it to "make_reservation.confirm"
-5. Add these training phrases:
-   ```text
-   Sí, está bien
-   Me parece bien
-   Confirmo
-   Perfecto
-   Sí, adelante
-   Claro que sí
-   Está correcto
-   ```
-6. Add response:
-   ```text
-   ¡Excelente! Su reserva está confirmada para el $date a las $time. 
-   Le enviaré un mensaje de confirmación al número que nos proporcionó.
-   ¿Necesita algo más?
-   ```
-
+#### Testing Prompt Variations:
 ```text
-🔍 Testing Activity #2:
-Test different ways to say "yes" in Spanish:
-- "Sí, correcto"
-- "Así está bien"
-- "Adelante"
-Does your bot recognize all these affirmative responses?
+Important Learning Point:
+1. Run through the reservation flow multiple times
+2. Notice how Dialogflow randomly selects from your response variations
+3. This creates a more dynamic, natural-feeling conversation
+4. Users won't feel like they're talking to a script
+
+Test the complete flow several times to see how different combinations 
+of these responses work together. Pay attention to how the varying 
+language makes the conversation feel more human-like.
 ```
 
-#### B) Creating the Cancellation Intent
+Pro Tips:
+- Keep a consistent level of formality across all variations
+- Ensure all variations clearly ask for the same information
+- Consider adding more variations as you see how users interact with your bot
+- Test the variations with different user inputs to ensure they all make sense in context
 
-1. Click the three dots next to make_reservation
-2. Select "Add follow-up intent"
-3. Choose "no"
-4. Rename it to "make_reservation.cancel"
-5. Add these training phrases:
-   ```text
-   No, gracias
-   Mejor no
-   Cancelar
-   No quiero hacer la reserva
-   Déjame pensarlo
-   No estoy seguro
-   Mejor otro día
-   ```
-6. Add response:
-   ```text
-   No hay problema. ¿Le gustaría intentar con una fecha u horario diferente?
-   ```
+### Step 2: Follow-up Intents
 
+#### Why Do We Need Follow-up Intents?
 ```text
-🔍 Testing Activity #3:
-Complete Conversation Test:
-1. "Quiero hacer una reserva"
-2. "Para 4 personas"
-3. "Este viernes"
-4. "A las 8 de la noche"
-5. "En la terraza"
-6. [Bot should show confirmation message]
-7. Test both "Sí, confirmo" and "No, mejor no"
+Important Concept:
+Follow-up intents are crucial because they maintain the context of the conversation. 
+Think about this real conversation:
 
-Does your bot handle the entire flow correctly?
+Host: "¿Entonces sería una mesa para 4 personas este viernes a las 8?"
+Customer: "Sí"
+
+The "Sí" only makes sense because it's following the previous question. Without 
+context, "Sí" could mean anything!
 ```
 
-### Common Issues and Solutions
-
-1. If the bot doesn't recognize affirmative/negative responses:
-   - Add more training phrases
-   - Include regional variations
-   - Add phrases with punctuation
-
-2. If parameters aren't being collected properly:
-   - Check that all parameters are marked correctly
-   - Verify entity mappings
-   - Test each parameter individually
-
+#### Understanding the Difference
 ```text
-🎯 Final Challenge:
-Try to break your bot! Test these scenarios:
-1. Providing information out of order
-2. Giving partial information
-3. Changing answers mid-conversation
-4. Using slang or informal language
+Compare these two approaches:
 
-Fix any issues you find by adding appropriate training phrases and responses.
+1. WITHOUT Follow-up Intents:
+   User: "Quiero reservar una mesa"
+   Bot: "¿Para cuántas personas?"
+   User: "Sí"
+   Bot: [Confused because "Sí" matches multiple intents]
+
+2. WITH Follow-up Intents:
+   User: "Quiero reservar una mesa"
+   Bot: "¿Para cuántas personas?"
+   User: "Sí"
+   Bot: [Knows this "Sí" is related to the reservation confirmation 
+        because it's a follow-up intent]
 ```
 
-Remember: A good reservation system should be flexible but also confirm details clearly to avoid mistakes!
+#### Benefits of Follow-up Intents:
+1. **Context Awareness**: Follow-ups understand the conversation flow
+2. **Reduced Confusion**: Prevents mixing up similar responses in different contexts
+3. **Better Organization**: Keeps related intents grouped together
+4. **Improved Accuracy**: Higher confidence in intent matching due to context
 
-## Part 4: Understanding and Setting Up Context
-
-### What is Context? 🤔
-
-Think of context like the chatbot's short-term memory. Just like in human conversations, context helps the bot remember what you were talking about previously. Here's a simple example:
-
+#### Testing Tip:
 ```text
-User: "Sí"
+Try this experiment in your bot:
+
+1. Create a regular intent for "Sí"
+2. Create a follow-up intent for "Sí"
+3. Test both in different contexts
+4. Notice how the follow-up intent only triggers when it should
+
+This will help you understand why follow-ups are essential for natural 
+conversation flows.
 ```
 
-Without context, the bot doesn't know what this "Sí" means. Is the user:
-- Confirming a reservation?
-- Agreeing to want a drink?
-- Saying yes to the dessert menu?
+Create these follow-up intents under `make_reservation`:
 
-With context, the bot knows exactly what the user is saying "yes" to!
-
-### How Context Works 🔄
-
-Imagine you're at a restaurant:
-```text
-Waiter: "Would you like dessert?"
-You: "Yes"
-```
-The waiter understands your "yes" because of the context (they just asked about dessert).
-
-In Dialogflow, we create this same understanding using:
-1. Output Context: What the bot "remembers" after saying something
-2. Input Context: What the bot needs to "remember" to understand the next thing
-3. Lifespan: How long the bot should "remember" this information (measured in conversation turns)
-
-```text
-🎭 Real-world Example:
-
-Without Context:
-User: "Sí"
-Bot: "No entiendo. ¿Puede ser más específico?"
-
-With Context:
-Bot: "¿Confirma la reserva para 4 personas este viernes?"
-[Output Context: awaiting_reservation_confirmation]
-User: "Sí"
-[Input Context matches: awaiting_reservation_confirmation]
-Bot: "¡Perfecto! Su reserva está confirmada."
-```
-
-### Setting Up Context in Your Reservation Flow 🛠️
-
-Let's set up contexts step by step:
-
-1. In the main `make_reservation` intent:
-   ```text
-   After collecting all details (people, date, time), the bot asks:
-   "¿Confirma la reserva para 4 personas este viernes a las 8?"
+1. make_reservation.confirm
+   - Training Phrases:
+     - Sí, está bien
+     - Me parece bien
+     - Confirmo
+     - Perfecto
    
-   Output Context: awaiting_reservation_confirmation
-   Lifespan: 5 (gives user 5 conversation turns to respond)
-   ```
+2. make_reservation.cancel
+   - Training Phrases:
+     - No, gracias
+     - Mejor no
+     - Cancelar
+     - No quiero hacer la reserva
+
+## Part 4: Setting Up Context
+
+Think of context like a waiter's memory during service. When you're at a restaurant and say "I'll take that too", the waiter knows what "that" means because they remember what was just discussed. In Dialogflow, context works the same way - it's how your chatbot remembers the current conversation state.
 
 ```text
-🔍 Testing Activity #1:
-1. Go to your make_reservation intent
-2. Find the "Contexts" section
-3. Click "Add Context"
-4. Type: awaiting_reservation_confirmation
-5. Set lifespan to 5
+For example:
+User: "Quiero hacer una reserva"
+Bot: "Por supuesto. ¿Para cuántas personas?"
+User: "Para 4"
+Bot: "¿Qué día le gustaría venir?"
+User: "Mejor no"              <- Without context, "Mejor no" could mean anything
+                                With context, the bot knows you're canceling
+                                the reservation process
 ```
 
-2. In the `make_reservation.confirm` intent:
-   ```text
-   When user says "Sí" or similar:
-   Input Context: awaiting_reservation_confirmation
-   (Bot knows they're saying yes to the reservation)
-   
-   Output Context: reservation_confirmed
-   Lifespan: 5 (for potential follow-up questions)
-   ```
+Context helps your chatbot:
+- Remember what's being discussed
+- Understand what stage of the conversation you're in
+- Know when a user can say certain things
+- Clear its "memory" when a conversation topic ends
 
-3. In the `make_reservation.cancel` intent:
-   ```text
-   When user says "No" or similar:
-   Input Context: awaiting_reservation_confirmation
-   (Bot knows they're saying no to the reservation)
-   
-   Output Context: reservation_cancelled
-   Lifespan: 2 (shorter because we might want to start fresh soon)
-   ```
+The context's lifespan (measured in turns of conversation) determines how long the bot should remember this information. Think carefully about these lifespans - too short and the bot forgets too quickly, too long and it might remember things it should have forgotten.
 
-```text
-💡 Pro Tip: Think of contexts like passing a baton in a relay race:
-- make_reservation passes the "awaiting_confirmation" baton
-- make_reservation.confirm or make_reservation.cancel catches it
-- Then they pass their own batons (confirmed/cancelled) for the next steps
-```
+### Context Configuration
 
-### Testing Context Flow 🧪
+1. In the `make_reservation` intent:
+   - Output Context: `awaiting_reservation_confirmation`
+   - Lifespan: 5
 
-```text
-🔍 Testing Activity #2:
-Try this conversation flow:
+2. In make_reservation.confirm:
+   - Input Context: `awaiting_reservation_confirmation`
+   - Output Context: `reservation_confirmed`
+   - Lifespan: 5
 
-1. User: "Quiero hacer una reserva"
-2. Bot: [Collects details]
-3. Bot: "¿Confirma la reserva...?"
-   → Check: Is awaiting_reservation_confirmation context active?
-4. User: "Sí"
-   → Check: Does bot understand this simple "Sí"?
-5. Bot: [Confirms reservation]
-   → Check: Is reservation_confirmed context active?
-```
-
-### Common Context Issues 🚧
-
-1. Context Expiring Too Soon:
-   ```text
-   Problem: Bot doesn't understand "Sí" after a delay
-   Solution: Increase lifespan number
-   ```
-
-2. Context Not Clearing:
-   ```text
-   Problem: Bot uses old context in new conversation
-   Solution: Add context clearing in end-of-conversation intents
-   ```
-
-3. Multiple Active Contexts:
-   ```text
-   Problem: Bot confused between multiple "Sí" responses
-   Solution: Clear irrelevant contexts, be specific with input contexts
-   ```
-
-```text
-🎯 Challenge:
-Create a new intent that uses the reservation_confirmed context:
-
-1. Name it "post_reservation_question"
-2. It should only trigger if reservation_confirmed is active
-3. Handle questions like:
-   - "¿A qué hora era la reserva?"
-   - "¿Cuántas personas puse?"
-   - "¿Me puede repetir los detalles?"
-```
-
-### Best Practices for Context 📋
-
-1. Keep lifespans reasonable:
-   - 5 turns for important decisions
-   - 2-3 turns for quick follow-ups
-   - 1 turn for immediate responses
-
-2. Clear contexts when starting new topics
-3. Use descriptive context names
-4. Test conversation flows thoroughly
-5. Consider user thinking time when setting lifespans
-
-Remember: Good context management makes your chatbot feel more natural and human-like in conversations!
+3. In make_reservation.cancel:
+   - Input Context: `awaiting_reservation_confirmation`
+   - Output Context: `reservation_cancelled`
+   - Lifespan: 2
 
 ### Response Management
 
