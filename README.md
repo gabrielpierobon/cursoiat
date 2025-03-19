@@ -1,6 +1,27 @@
 # Curso de Inteligencia Artificial y Chatbots
 
-Este repositorio contiene ejemplos prácticos de chatbots e inteligencia artificial. Está diseñado para ser accesible incluso si nunca has programado antes.
+Bienvenido a este repositorio educativo sobre Inteligencia Artificial y Chatbots. Este proyecto está diseñado como un recurso didáctico interactivo que permite explorar, experimentar y aprender sobre las tecnologías conversacionales y sistemas de IA, sin necesidad de experiencia previa en programación.
+
+## 📚 ¿Qué encontrarás aquí?
+
+Este repositorio ofrece una colección completa de ejemplos prácticos que ilustran la evolución de los chatbots y la IA conversacional:
+
+- **Historia viva de la IA**: Desde recreaciones de los primeros chatbots históricos como ELIZA (1966) hasta sistemas modernos basados en BERT.
+- **Progresión didáctica**: Los ejemplos están organizados desde conceptos básicos hasta aplicaciones avanzadas.
+- **Enfoque práctico**: Cada ejemplo es funcional y puede ejecutarse inmediatamente para experimentar diferentes capacidades de los sistemas conversacionales.
+- **Variedad de formatos**: Incluye tanto aplicaciones Python interactivas como demostraciones HTML accesibles desde el navegador.
+
+## 🎯 Objetivos de aprendizaje
+
+Este material te permitirá:
+
+1. **Comprender los fundamentos** de la tecnología conversacional y su evolución
+2. **Experimentar directamente** con diferentes tipos de chatbots
+3. **Visualizar la progresión** desde sistemas basados en reglas hasta IA más avanzada
+4. **Identificar aplicaciones prácticas** para diferentes sectores (viajes, finanzas, atención al cliente)
+5. **Desarrollar una base conceptual** para crear tus propios proyectos
+
+Todo el contenido está diseñado con un enfoque "aprender haciendo", donde cada ejemplo puede ser explorado, modificado y utilizado como base para proyectos personales.
 
 ## 🤖 Proyectos Disponibles
 
