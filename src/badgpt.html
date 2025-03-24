@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BadGPT: Demo de Limitaciones de Modelos Básicos</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-darker: #1a1a1a;
+            --bg-panel: #242424;
+            --text-light: #ffffff;
+            --text-dim: #aaaaaa;
+            --text-dimmer: #777777;
+            --primary: #ef4444;
+            --primary-dark: #b91c1c;
+            --blue: #3b82f6;
+            --blue-dark: #2563eb;
+            --green: #22c55e;
+            --green-dark: #16a34a;
+            --yellow: #eab308;
+            --red: #dc2626;
+            --border-dark: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-dark);
+        }
+        
+        .title-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .version-badge {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--text-dim);
+            font-style: italic;
+            font-size: 0.875rem;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        .panel {
+            background-color: var(--bg-panel);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .model-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .model-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: var(--bg-darker);
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .model-btn.active.dictionary {
+            background-color: var(--blue);
+            color: white;
+        }
+        
+        .model-btn.active.rules {
+            background-color: var(--green);
+            color: white;
+        }
+        
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+        
+        .model-info {
+            background-color: var(--bg-darker);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .model-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .model-description {
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        .model-limitation {
+            color: var(--primary);
+            font-style: italic;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        label {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+            margin-bottom: 0.25rem;
+        }
+        
+        .input-wrapper {
+            display: flex;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 0.5rem;
+            background-color: var(--bg-darker);
+            border: none;
+            border-radius: 0.5rem 0 0 0.5rem;
+            color: white;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--blue) inset;
+        }
+        
+        .process-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 0 0.5rem 0.5rem 0;
+            cursor: pointer;
+        }
+        
+        .process-btn:hover {
+            background-color: var(--blue-dark);
+        }
+        
+        .process-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .examples-container {
+            margin-top: 0.75rem;
+        }
+        
+        .examples-title {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+        
+        .examples-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .example-btn {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--bg-darker);
+            color: var(--text-dim);
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        
+        .example-btn:hover {
+            background-color: var(--border-dark);
+        }
+        
+        .result-container {
+            background-color: var(--bg-darker);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-dark);
+            display: none;
+        }
+        
+        .result-header {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-content {
+            background-color: var(--bg-panel);
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            white-space: pre-line;
+        }
+        
+        .debug-info {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-dimmer);
+            border-top: 1px solid var(--border-dark);
+            padding-top: 0.5rem;
+            display: none;
+        }
+        
+        .debug-type {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .debug-badge {
+            padding: 0.1rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.7rem;
+        }
+        
+        .badge-exact {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+        
+        .badge-partial {
+            background-color: rgba(234, 179, 8, 0.2);
+            color: #facc15;
+        }
+        
+        .badge-none {
+            background-color: rgba(220, 38, 38, 0.2);
+            color: #f87171;
+        }
+        
+        .badge-rules {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+        
+        .debug-details {
+            font-family: monospace;
+            margin-top: 0.25rem;
+        }
+        
+        .debug-container {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        
+        .explanation-panel {
+            height: 100%;
+        }
+        
+        .explanation-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-dark);
+        }
+        
+        .model-explanation {
+            margin-bottom: 1rem;
+        }
+        
+        .model-explanation h3 {
+            font-size: 0.95rem;
+            color: var(--blue);
+            margin-bottom: 0.25rem;
+        }
+        
+        .model-explanation h3.rules {
+            color: var(--green);
+        }
+        
+        .model-explanation ul {
+            list-style-position: inside;
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+        
+        .model-explanation li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .conclusion {
+            background-color: var(--bg-darker);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+        
+        footer {
+            text-align: center;
+            color: var(--text-dimmer);
+            font-size: 0.75rem;
+            padding: 1rem 0;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title-container">
+                <h1>BadGPT</h1>
+                <span class="version-badge">v0.1-alpha</span>
+            </div>
+            <p class="subtitle">Demostrando por qué los enfoques simples fracasan</p>
+        </header>
+        
+        <div class="main-grid">
+            <div class="main-content">
+                <div class="panel">
+                    <div class="model-selector">
+                        <button class="model-btn dictionary active" id="dictionary-btn">Modelo de Diccionario</button>
+                        <button class="model-btn rules" id="rules-btn">Modelo de Reglas</button>
+                    </div>
+                    
+                    <div class="model-info">
+                        <h2 class="model-title" id="model-title">📚 Modelo de Diccionario Gigante</h2>
+                        <p class="model-description" id="model-description">
+                            Este modelo solo puede responder a frases que coinciden con entradas en su diccionario predefinido.
+                        </p>
+                        <p class="model-limitation" id="model-limitation">
+                            Limitación principal: solo conoce respuestas específicas para un conjunto finito de frases.
+                        </p>
+                    </div>
+                    
+                    <div class="input-container">
+                        <label for="user-input" id="input-label">Escribe algo (prueba con saludos, preguntas sobre identidad, etc.)</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="user-input" 
+                                placeholder="Ej: 'hola', 'quién eres', 'qué puedes hacer'"
+                            >
+                            <button id="process-btn" class="process-btn">Procesar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="examples-container">
+                        <p class="examples-title">Ejemplos rápidos:</p>
+                        <div class="examples-buttons" id="examples-container">
+                            <!-- Los ejemplos se cargarán dinámicamente -->
+                        </div>
+                    </div>
+                    
+                    <div class="result-container" id="result-container">
+                        <h3 class="result-header">Resultado:</h3>
+                        <div class="result-content" id="result-content"></div>
+                        
+                        <div class="debug-info" id="debug-info">
+                            <div class="debug-type">
+                                <span>Tipo:</span>
+                                <span class="debug-badge" id="debug-badge"></span>
+                            </div>
+                            <div class="debug-details" id="debug-details"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="debug-container">
+                        <input type="checkbox" id="debug-mode">
+                        <label for="debug-mode" style="margin-left: 0.5rem;">Modo debug</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="panel explanation-panel">
+                    <h2 class="explanation-title">¿Por qué esto es "malo"?</h2>
+                    
+                    <div class="model-explanation">
+                        <h3>Modelo de Diccionario</h3>
+                        <ul>
+                            <li>Solo puede responder frases exactas en su diccionario</li>
+                            <li>No puede anticipar todas las posibles entradas</li>
+                            <li>No tiene memoria de la conversación</li>
+                            <li>No puede aprender nuevas respuestas</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="model-explanation">
+                        <h3 class="rules">Modelo de Reglas</h3>
+                        <ul>
+                            <li>Genera frases usando patrones gramaticales</li>
+                            <li>Es gramaticalmente correcto pero semánticamente absurdo</li>
+                            <li>No entiende el significado de lo que dice</li>
+                            <li>No tiene contexto ni razonamiento</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="conclusion">
+                        <p>
+                            Esta demostración ilustra por qué los enfoques iniciales a los modelos de lenguaje fracasaron,
+                            mientras que los modelos modernos utilizan técnicas avanzadas como redes neuronales y aprendizaje 
+                            profundo para superar estas limitaciones.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>BadGPT v0.1-alpha | Demostración Educativa | No para uso en producción</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Estado de la aplicación
+            let currentModel = 'dictionary';
+            let isProcessing = false;
+            let debugMode = false;
+            
+            // Elementos del DOM
+            const dictionaryBtn = document.getElementById('dictionary-btn');
+            const rulesBtn = document.getElementById('rules-btn');
+            const modelTitle = document.getElementById('model-title');
+            const modelDescription = document.getElementById('model-description');
+            const modelLimitation = document.getElementById('model-limitation');
+            const inputLabel = document.getElementById('input-label');
+            const userInput = document.getElementById('user-input');
+            const processBtn = document.getElementById('process-btn');
+            const examplesContainer = document.getElementById('examples-container');
+            const resultContainer = document.getElementById('result-container');
+            const resultContent = document.getElementById('result-content');
+            const debugInfoContainer = document.getElementById('debug-info');
+            const debugBadge = document.getElementById('debug-badge');
+            const debugDetails = document.getElementById('debug-details');
+            const debugModeCheckbox = document.getElementById('debug-mode');
+            
+            // Diccionario
+            const diccionarioGigante = {
+                // Saludos y cortesía
+                "hola": "¡Hola! ¿Cómo estás?",
+                "buenos días": "¡Buenos días! ¿En qué puedo ayudarte?",
+                "buenas tardes": "¡Buenas tardes! ¿Necesitas algo?",
+                "cómo estás": "Estoy bien, gracias por preguntar.",
+                "gracias": "De nada, estoy para ayudar.",
+                "adios": "¡Adiós! Que tengas un buen día.",
+                
+                // Preguntas sobre identidad
+                "quién eres": "Soy BadGPT, una demostración de modelos de lenguaje limitados.",
+                "qué eres": "Soy una demostración de lo malo que sería un modelo de lenguaje basado en diccionarios o reglas simples.",
+                "cómo te llamas": "Me llamo BadGPT, una demostración de los límites de enfoques básicos de IA.",
+                
+                // Preguntas comunes
+                "qué hora es": "Lo siento, no puedo saber la hora actual. No tengo acceso a esa información.",
+                "qué día es hoy": "No puedo saber qué día es hoy. No tengo acceso a información en tiempo real.",
+                
+                // Preguntas sobre capacidades
+                "qué puedes hacer": "Puedo responder a un conjunto muy limitado de preguntas preprogramadas o generar frases gramaticalmente correctas pero sin sentido contextual.",
+                "entiendes lo que digo": "En realidad no. Solo busco coincidencias exactas en mi diccionario o genero frases basadas en reglas simples.",
+                
+                // Preguntas sobre modelos de lenguaje
+                "qué es un modelo de lenguaje": "Un modelo de lenguaje es un sistema diseñado para procesar, entender y generar lenguaje humano natural.",
+                "cómo funciona un modelo de lenguaje": "Los modelos de lenguaje modernos usan redes neuronales entrenadas con grandes cantidades de texto. Yo, en cambio, uso métodos demasiado simples para ser útil.",
+                
+                // Preguntas de conocimiento general
+                "cuál es la capital de españa": "La capital de España es Madrid.",
+                "cuál es la capital de francia": "La capital de Francia es París.",
+                "cuántos planetas hay": "Tradicionalmente se consideran 8 planetas en nuestro sistema solar: Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano y Neptuno.",
+                
+                // Frases aleatorias
+                "cuéntame un chiste": "¿Por qué BadGPT no puede ser detective? Porque solo busca coincidencias exactas.",
+                "tengo una pregunta": "Adelante, pero recuerda que solo puedo responder si tu pregunta coincide exactamente con algo en mi diccionario.",
+                
+                // Frases para la demostración
+                "esto es muy limitado": "¡Exactamente! Esa es la lección: los diccionarios predefinidos y las reglas simples son extremadamente limitados para crear modelos de lenguaje funcionales.",
+                "por qué eres tan malo": "Soy deliberadamente malo para demostrar por qué los primeros intentos de crear asistentes con diccionarios o reglas gramaticales no funcionaron bien."
+            };
+            
+            // Reglas gramaticales
+            const reglasGramaticales = {
+                sujetos: {
+                    singular: [
+                        "yo", "tú", "él", "ella", "el gato", "el perro", "la persona", 
+                        "el sistema", "la inteligencia artificial", "BadGPT", "el modelo"
+                    ],
+                    plural: [
+                        "nosotros", "vosotros", "ellos", "ellas", 
+                        "los gatos", "los perros", "las personas",
+                        "los sistemas", "las inteligencias artificiales", "los modelos"
+                    ]
+                },
+                verbos: {
+                    presente: {
+                        singular: ["come", "corre", "habla", "escribe", "lee", "piensa", "siente", "analiza", 
+                                "programa", "responde", "pregunta", "ayuda", "falla", "funciona", "existe"],
+                        plural: ["comen", "corren", "hablan", "escriben", "leen", "piensan", "sienten", "analizan", 
+                                "programan", "responden", "preguntan", "ayudan", "fallan", "funcionan", "existen"]
+                    },
+                    pasado: {
+                        singular: ["comió", "corrió", "habló", "escribió", "leyó", "pensó", "sintió", "analizó"],
+                        plural: ["comieron", "corrieron", "hablaron", "escribieron", "leyeron", "pensaron", "sintieron", "analizaron"]
+                    }
+                },
+                complementos: [
+                    "una manzana", "un libro", "el mensaje", "la tarea", 
+                    "en el parque", "en la casa", "en internet", "en el programa",
+                    "con alegría", "con tristeza", "con precisión", "con dificultad",
+                    "sin sentido", "sin contexto", "sin inteligencia", "sin comprender"
+                ],
+                preguntas: ["qué", "cómo", "por qué", "cuándo", "dónde", "quién"]
+            };
+            
+            // Ejemplos para cada modelo
+            const ejemplosDiccionario = [
+                "hola", "cómo estás", "quién eres", "qué puedes hacer", 
+                "qué es un modelo de lenguaje", "cuál es la capital de españa",
+                "esto es muy limitado", "cuéntame un chiste"
+            ];
+            
+            const ejemplosReglas = [
+                "Generar frase simple", "Generar pregunta", 
+                "Generar frase en pasado", "Generar 3 frases aleatorias"
+            ];
+            
+            const ejemplosPorModelo = {
+                'dictionary': ejemplosDiccionario,
+                'rules': ejemplosReglas
+            };
+            
+            // Inicializar la interfaz
+            updateModelInfo();
+            updateExamples();
+            
+            // Eventos
+            dictionaryBtn.addEventListener('click', function() {
+                if (currentModel !== 'dictionary') {
+                    currentModel = 'dictionary';
+                    dictionaryBtn.classList.add('active');
+                    rulesBtn.classList.remove('active');
+                    updateModelInfo();
+                    updateExamples();
+                    updatePlaceholder();
+                }
+            });
+            
+            rulesBtn.addEventListener('click', function() {
+                if (currentModel !== 'rules') {
+                    currentModel = 'rules';
+                    rulesBtn.classList.add('active');
+                    dictionaryBtn.classList.remove('active');
+                    updateModelInfo();
+                    updateExamples();
+                    updatePlaceholder();
+                }
+            });
+            
+            processBtn.addEventListener('click', processUserInput);
+            
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    processUserInput();
+                }
+            });
+            
+            debugModeCheckbox.addEventListener('change', function() {
+                debugMode = this.checked;
+                updateDebugVisibility();
+            });
+            
+            // Funciones de utilidad
+            function updateModelInfo() {
+                if (currentModel === 'dictionary') {
+                    modelTitle.innerText = '📚 Modelo de Diccionario Gigante';
+                    modelDescription.innerText = 'Este modelo solo puede responder a frases que coinciden con entradas en su diccionario predefinido.';
+                    modelLimitation.innerText = 'Limitación principal: solo conoce respuestas específicas para un conjunto finito de frases.';
+                    inputLabel.innerText = 'Escribe algo (prueba con saludos, preguntas sobre identidad, etc.)';
+                } else {
+                    modelTitle.innerText = '📏 Modelo de Reglas Gramaticales';
+                    modelDescription.innerText = 'Este modelo genera frases basadas en reglas gramaticales simples. Puede crear oraciones gramaticalmente correctas pero semánticamente sin sentido.';
+                    modelLimitation.innerText = 'Limitación principal: genera texto sin comprender su significado o contexto.';
+                    inputLabel.innerText = 'Escribe un tipo de frase o selecciona un ejemplo';
+                }
+            }
+            
+            function updatePlaceholder() {
+                if (currentModel === 'dictionary') {
+                    userInput.placeholder = "Ej: 'hola', 'quién eres', 'qué puedes hacer'";
+                } else {
+                    userInput.placeholder = "Ej: 'generar frase simple', 'generar pregunta'";
+                }
+            }
+            
+            function updateExamples() {
+                examplesContainer.innerHTML = '';
+                
+                const ejemplos = ejemplosPorModelo[currentModel].slice(0, 4);
+                ejemplos.forEach(ejemplo => {
+                    const button = document.createElement('button');
+                    button.className = 'example-btn';
+                    button.innerText = ejemplo;
+                    button.addEventListener('click', function() {
+                        userInput.value = ejemplo;
+                        processUserInput();
+                    });
+                    examplesContainer.appendChild(button);
+                });
+                
+                // Añadir botón de ejemplo aleatorio
+                const randomBtn = document.createElement('button');
+                randomBtn.className = 'example-btn';
+                randomBtn.innerText = 'Aleatorio';
+                randomBtn.addEventListener('click', function() {
+                    const ejemplos = ejemplosPorModelo[currentModel];
+                    const ejemploAleatorio = ejemplos[Math.floor(Math.random() * ejemplos.length)];
+                    userInput.value = ejemploAleatorio;
+                    processUserInput();
+                });
+                examplesContainer.appendChild(randomBtn);
+            }
+            
+            function updateDebugVisibility() {
+                if (debugMode) {
+                    debugInfoContainer.style.display = 'block';
+                } else {
+                    debugInfoContainer.style.display = 'none';
+                }
+            }
+            
+            function processUserInput() {
+                const texto = userInput.value.trim();
+                
+                if (!texto || isProcessing) return;
+                
+                isProcessing = true;
+                processBtn.disabled = true;
+                processBtn.innerText = 'Pensando...';
+                
+                // Simular procesamiento
+                setTimeout(() => {
+                    if (currentModel === 'dictionary') {
+                        const resultado = generarRespuestaDiccionario(texto);
+                        mostrarResultado(resultado.respuesta, resultado);
+                    } else {
+                        procesarEjemploReglas(texto);
+                    }
+                    
+                    isProcessing = false;
+                    processBtn.disabled = false;
+                    processBtn.innerText = 'Procesar';
+                }, 500);
+            }
+            
+            function generarRespuestaDiccionario(texto) {
+                const textoNormalizado = texto.toLowerCase().trim().replace(/[¿?¡!.,;:]/g, '');
+                
+                // Buscar coincidencia exacta
+                if (diccionarioGigante[textoNormalizado]) {
+                    return {
+                        respuesta: diccionarioGigante[textoNormalizado],
+                        tipo: 'coincidencia_exacta'
+                    };
+                }
+                
+                // Buscar coincidencia parcial
+                let mejorCoincidencia = '';
+                let mejorPuntuacion = 0;
+                
+                Object.keys(diccionarioGigante).forEach(clave => {
+                    if (textoNormalizado.includes(clave) && clave.length > mejorPuntuacion) {
+                        mejorCoincidencia = clave;
+                        mejorPuntuacion = clave.length;
+                    }
+                });
+                
+                if (mejorCoincidencia) {
+                    return {
+                        respuesta: `Encontré algo similar a "${mejorCoincidencia}": ${diccionarioGigante[mejorCoincidencia]}`,
+                        tipo: 'coincidencia_parcial',
+                        coincidencia: mejorCoincidencia
+                    };
+                }
+                
+                // No se encontró nada
+                return {
+                    respuesta: "Lo siento, no tengo una respuesta para eso en mi diccionario. Soy muy limitado y solo puedo responder a frases exactas preprogramadas.",
+                    tipo: 'sin_coincidencia'
+                };
+            }
+            
+            function seleccionarAleatorio(array) {
+                return array[Math.floor(Math.random() * array.length)];
+            }
+            
+            function generarFraseConReglas(tipo = 'simple', tiempo = 'presente') {
+                const { sujetos, verbos, complementos } = reglasGramaticales;
+                
+                // Determinar si usamos sujeto singular o plural
+                const tipoSujeto = Math.random() > 0.5 ? 'singular' : 'plural';
+                const sujeto = seleccionarAleatorio(sujetos[tipoSujeto]);
+                
+                // Seleccionar verbo concordante con el sujeto y tiempo
+                const verbo = seleccionarAleatorio(verbos[tiempo][tipoSujeto]);
+                
+                // Para frases simples
+                if (tipo === 'simple') {
+                    const complemento = seleccionarAleatorio(complementos);
+                    return {
+                        frase: `${sujeto} ${verbo} ${complemento}.`,
+                        estructura: `[Sujeto: ${sujeto}] [Verbo(${tiempo}, ${tipoSujeto}): ${verbo}] [Complemento: ${complemento}]`
+                    };
+                }
+                
+                // Para preguntas
+                if (tipo === 'pregunta') {
+                    const pregunta = seleccionarAleatorio(reglasGramaticales.preguntas);
+                    const complemento = seleccionarAleatorio(complementos);
+                    return {
+                        frase: `¿${pregunta} ${verbo} ${sujeto} ${complemento}?`,
+                        estructura: `[Interrogativo: ${pregunta}] [Verbo: ${verbo}] [Sujeto: ${sujeto}] [Complemento: ${complemento}]`
+                    };
+                }
+                
+                // Por defecto, frase simple
+                const complemento = seleccionarAleatorio(complementos);
+                return {
+                    frase: `${sujeto} ${verbo} ${complemento}.`,
+                    estructura: `[Sujeto: ${sujeto}] [Verbo: ${verbo}] [Complemento: ${complemento}]`
+                };
+            }
+            
+            function procesarEjemploReglas(ejemplo) {
+                let resultado = '';
+                let detalles = [];
+                
+                switch(ejemplo.toLowerCase()) {
+                    case 'generar frase simple':
+                        const simple = generarFraseConReglas('simple', 'presente');
+                        resultado = simple.frase;
+                        detalles.push(simple.estructura);
+                        break;
+                        
+                    case 'generar pregunta':
+                        const pregunta = generarFraseConReglas('pregunta', 'presente');
+                        resultado = pregunta.frase;
+                        detalles.push(pregunta.estructura);
+                        break;
+                        
+                    case 'generar frase en pasado':
+                        const pasado = generarFraseConReglas('simple', 'pasado');
+                        resultado = pasado.frase;
+                        detalles.push(pasado.estructura);
+                        break;
+                        
+                    case 'generar 3 frases aleatorias':
+                        let frases = [];
+                        
+                        for (let i = 0; i < 3; i++) {
+                            const tipoAleatorio = Math.random() > 0.7 ? 'pregunta' : 'simple';
+                            const tiempoAleatorio = Math.random() > 0.6 ? 'presente' : 'pasado';
+                            const frase = generarFraseConReglas(tipoAleatorio, tiempoAleatorio);
+                            frases.push(frase.frase);
+                            detalles.push(frase.estructura);
+                        }
+                        
+                        resultado = frases.join('\n\n');
+                        break;
+                        
+                    default:
+                        // Intenta interpretar la entrada del usuario
+                        if (ejemplo.toLowerCase().includes('pregunta')) {
+                            const pregunta = generarFraseConReglas('pregunta', 'presente');
+                            resultado = pregunta.frase;
+                            detalles.push(pregunta.estructura);
+                        } else if (ejemplo.toLowerCase().includes('pasado')) {
+                            const pasado = generarFraseConReglas('simple', 'pasado');
+                            resultado = pasado.frase;
+                            detalles.push(pasado.estructura);
+                        } else {
+                            const simple = generarFraseConReglas('simple', 'presente');
+                            resultado = simple.frase;
+                            detalles.push(simple.estructura);
+                        }
+                }
+                
+                mostrarResultado(resultado, {
+                    tipo: 'reglas_gramaticales',
+                    detalles: detalles.join('\n')
+                });
+            }
+            
+            function mostrarResultado(texto, debugData) {
+                resultContent.innerText = texto;
+                resultContainer.style.display = 'block';
+                
+                if (debugMode && debugData) {
+                    debugInfoContainer.style.display = 'block';
+                    
+                    // Configurar badge según el tipo
+                    debugBadge.className = 'debug-badge';
+                    debugBadge.innerText = debugData.tipo.replace(/_/g, ' ');
+                    
+                    if (debugData.tipo === 'coincidencia_exacta') {
+                        debugBadge.classList.add('badge-exact');
+                    } else if (debugData.tipo === 'coincidencia_parcial') {
+                        debugBadge.classList.add('badge-partial');
+                    } else if (debugData.tipo === 'sin_coincidencia') {
+                        debugBadge.classList.add('badge-none');
+                    } else if (debugData.tipo === 'reglas_gramaticales') {
+                        debugBadge.classList.add('badge-rules');
+                    }
+                    
+                    // Mostrar detalles si existen
+                    if (debugData.detalles) {
+                        debugDetails.innerText = debugData.detalles;
+                        debugDetails.style.display = 'block';
+                    } else {
+                        debugDetails.style.display = 'none';
+                    }
+                } else {
+                    debugInfoContainer.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
