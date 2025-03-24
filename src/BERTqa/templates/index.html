@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BERT-QA - Sistema de Preguntas y Respuestas</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Barra lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fas fa-brain"></i> BERT-QA</h1>
+            </div>
+            
+            <div class="new-conversation">
+                <button id="new-conversation-btn">
+                    <i class="fas fa-plus"></i> Nueva conversación
+                </button>
+            </div>
+            
+            <div class="model-info-container">
+                <h3>Información del Modelo</h3>
+                <div id="model-status">Cargando...</div>
+            </div>
+            
+            <div class="examples-container">
+                <h3>Ejemplos</h3>
+                <div id="examples-list">
+                    <!-- Los ejemplos se cargarán aquí -->
+                    <div class="loading-message">Cargando ejemplos...</div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <p>Modelo basado en BERT de Hugging Face</p>
+                <p>© 2023 BERT-QA</p>
+            </div>
+        </aside>
+        
+        <!-- Área principal -->
+        <main class="main-content">
+            <!-- Encabezado -->
+            <div class="main-header">
+                <h2>Preguntas & Respuestas con BERT <span class="model-badge">AI</span></h2>
+            </div>
+            
+            <!-- Área de contexto -->
+            <div class="context-container">
+                <div class="context-header">
+                    <h3>Texto de Contexto</h3>
+                    <div class="context-controls">
+                        <button id="clear-context" title="Limpiar contexto">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <textarea id="context-input" placeholder="Introduce aquí el texto de contexto para realizar preguntas..."></textarea>
+            </div>
+            
+            <!-- Historial de preguntas y respuestas -->
+            <div class="qa-history-container" id="qa-history">
+                <!-- Las preguntas y respuestas aparecerán aquí -->
+            </div>
+            
+            <!-- Formulario de pregunta -->
+            <div class="question-container">
+                <form id="question-form">
+                    <input type="text" id="question-input" placeholder="Escribe tu pregunta aquí..." autocomplete="off">
+                    <button type="submit" id="submit-btn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+                <div class="question-footer">
+                    <p><i class="fas fa-info-circle"></i> BERT buscará la respuesta en el texto de contexto que hayas proporcionado</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Templates para generación dinámica -->
+    <template id="question-template">
+        <div class="qa-pair">
+            <div class="question">
+                <div class="question-header">
+                    <div class="avatar user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="question-label">Pregunta:</span>
+                </div>
+                <div class="question-text"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="answer-template">
+        <div class="answer">
+            <div class="answer-header">
+                <div class="avatar ai-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <span class="answer-label">Respuesta:</span>
+            </div>
+            <div class="answer-text"></div>
+            <div class="answer-highlight" style="display: none;"></div>
+            <div class="answer-meta">
+                <span class="answer-confidence">Confianza: 0%</span>
+                <span class="answer-time">Tiempo: 0.00s</span>
+            </div>
+        </div>
+    </template>
+    
+    <template id="loading-template">
+        <div class="qa-pair loading">
+            <div class="question">
+                <div class="question-header">
+                    <div class="avatar user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="question-label">Pregunta:</span>
+                </div>
+                <div class="question-text"></div>
+            </div>
+            <div class="answer loading-answer">
+                <div class="answer-header">
+                    <div class="avatar ai-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <span class="answer-label">Buscando respuesta</span>
+                </div>
+                <div class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <template id="example-template">
+        <div class="example-item">
+            <div class="example-title"></div>
+            <div class="example-questions"></div>
+        </div>
+    </template>
+    
+    <template id="error-template">
+        <div class="qa-pair error">
+            <div class="question">
+                <div class="question-header">
+                    <div class="avatar user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="question-label">Pregunta:</span>
+                </div>
+                <div class="question-text"></div>
+            </div>
+            <div class="answer error-answer">
+                <div class="answer-header">
+                    <div class="avatar error-avatar">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <span class="answer-label">Error:</span>
+                </div>
+                <div class="error-text"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="system-message-template">
+        <div class="system-message"></div>
+    </template>
+    
+    <!-- Scripts -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html> 
