@@ -33,3 +33,6 @@ ENV/
 
 # Misc
 .DS_Store 
+
+
+src/lstm_llm/models/*

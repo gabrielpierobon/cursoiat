@@ -78,6 +78,19 @@ El repositorio incluye los siguientes ejemplos:
   python src/bert_qa.py
   ```
 
+- **lstm_llm**: Generador de texto estilo Harry Potter con interfaz web similar a ChatGPT. Utiliza un modelo LSTM para generar texto coherente.
+  ```
+  # Instalación
+  pip install tensorflow numpy flask flask-cors
+  
+  # Ejecución
+  cd src/lstm_llm
+  python app.py
+  
+  # Luego abre http://localhost:5000 en tu navegador
+  ```
+  > **Nota**: Requiere archivos del modelo LSTM pre-entrenado. Más detalles en el [README específico](src/lstm_llm/README.md).
+
 ### Páginas Web Interactivas (HTML)
 
 > **Nota**: Estos archivos se abren directamente en tu navegador web sin necesidad de instalar Python.
