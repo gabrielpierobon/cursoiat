@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qwen Chat - Asistente IA</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <meta name="description" content="Interfaz web para interactuar con el modelo Qwen2-7B-Instruct">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Barra lateral -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fas fa-robot"></i> Qwen Chat</h1>
+            </div>
+            
+            <div class="new-chat">
+                <button id="new-chat-btn">
+                    <i class="fas fa-plus"></i> Nueva conversación
+                </button>
+            </div>
+            
+            <div class="chat-list" id="chat-list">
+                <!-- Historial de chats -->
+                <div class="no-chats-message">No hay conversaciones recientes</div>
+            </div>
+            
+            <div class="model-info-container">
+                <h3>Información del Modelo</h3>
+                <div id="model-status">Cargando...</div>
+            </div>
+            
+            <div class="settings-container">
+                <h3>Configuración</h3>
+                <div class="setting-item">
+                    <label for="temperature-slider">Temperatura: <span id="temperature-value">0.7</span></label>
+                    <input type="range" id="temperature-slider" min="0" max="1" step="0.1" value="0.7">
+                </div>
+                <div class="setting-item">
+                    <label for="max-tokens-slider">Máx. Tokens: <span id="max-tokens-value">512</span></label>
+                    <input type="range" id="max-tokens-slider" min="64" max="2048" step="64" value="512">
+                </div>
+                <div class="setting-item">
+                    <label for="system-prompt">Prompt del Sistema:</label>
+                    <textarea id="system-prompt" rows="3">Eres un asistente de IA útil, respetuoso y sincero. Responde siempre de la mejor manera posible y con información precisa.</textarea>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <p>Modelo: Qwen2-7B-Instruct</p>
+                <p>Implementado con Hugging Face Transformers</p>
+                <p><a href="https://huggingface.co/Qwen/Qwen2-7B-Instruct" target="_blank">Documentación</a></p>
+            </div>
+        </div>
+        
+        <!-- Área principal de chat -->
+        <div class="chat-container">
+            <!-- Encabezado -->
+            <div class="chat-header">
+                <h2 id="current-chat-title">Nueva conversación <span class="model-badge">Qwen2-7B</span></h2>
+            </div>
+            
+            <!-- Área de mensajes -->
+            <div class="messages-container" id="messages-container">
+                <!-- Los mensajes aparecerán aquí -->
+                <div class="welcome-message">
+                    <h3>Bienvenido a Qwen Chat</h3>
+                    <p>Estoy listo para ayudarte. ¿Sobre qué te gustaría hablar?</p>
+                </div>
+            </div>
+            
+            <!-- Área de entrada -->
+            <div class="input-container">
+                <form id="chat-form">
+                    <div class="input-wrapper">
+                        <textarea id="user-input" placeholder="Escribe tu mensaje aquí..." rows="1"></textarea>
+                        <button type="submit" id="send-btn" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+                <div class="input-footer">
+                    <p><i class="fas fa-info-circle"></i> Presiona Enter para enviar, Shift+Enter para nueva línea</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Templates para generación dinámica -->
+    <template id="user-message-template">
+        <div class="message user-message">
+            <div class="message-bubble">
+                <div class="message-content"></div>
+            </div>
+            <div class="message-info">
+                <span class="message-timestamp"></span>
+            </div>
+        </div>
+    </template>
+    
+    <template id="bot-message-template">
+        <div class="message bot-message">
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-bubble">
+                <div class="message-content"></div>
+                <div class="message-actions">
+                    <button class="copy-btn" title="Copiar al portapapeles">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="message-info">
+                <span class="message-timestamp"></span>
+                <span class="message-metrics"></span>
+            </div>
+        </div>
+    </template>
+    
+    <template id="thinking-template">
+        <div class="message bot-message thinking">
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-bubble">
+                <div class="thinking-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <template id="error-message-template">
+        <div class="message error-message">
+            <div class="message-avatar">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="message-bubble">
+                <div class="message-content"></div>
+            </div>
+        </div>
+    </template>
+    
+    <template id="chat-item-template">
+        <div class="chat-item">
+            <i class="fas fa-comment"></i>
+            <span class="chat-title"></span>
+            <button class="delete-chat-btn" title="Eliminar conversación">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </template>
+    
+    <!-- Scripts -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html> 
