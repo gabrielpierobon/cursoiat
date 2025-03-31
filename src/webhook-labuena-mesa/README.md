@@ -52,6 +52,7 @@ webhook-labuena-mesa/
 │   └── main.py        # Aplicación FastAPI
 ├── data/
 │   └── members.xlsx   # Base de datos de miembros
+├── test-webhook.ps1   # Script de prueba para PowerShell
 └── requirements.txt
 ```
 
@@ -66,6 +67,50 @@ python -m uvicorn app.main:app --reload
 ```bash
 # En una nueva terminal
 ngrok http 8000
+```
+
+## Pruebas del Webhook
+
+Puedes probar el webhook de dos maneras:
+
+### 1. Usando el script PowerShell incluido
+
+El proyecto incluye un script `test-webhook.ps1` que facilita las pruebas:
+
+```powershell
+# Ejecutar desde PowerShell en la carpeta del proyecto
+.\test-webhook.ps1
+```
+
+El script ofrece las siguientes opciones:
+- Verificar estado del servidor (GET /)
+- Registrar nuevo miembro con formato básico
+- Registrar nuevo miembro con formato complejo (objetos anidados)
+- Modo interactivo para ingresar tus propios datos
+
+### 2. Usando comandos manuales
+
+Para probar manualmente con PowerShell:
+
+```powershell
+# Verificar estado del servidor
+Invoke-RestMethod -Uri "http://localhost:8000" -Method Get
+
+# Registrar nuevo miembro
+$body = @{
+  queryResult = @{
+    intent = @{
+      displayName = "register_club_member"
+    }
+    parameters = @{
+      nombre = "Carlos Mendoza"
+      email = "carlos@ejemplo.com"
+      telefono = "+34123456789"
+    }
+  }
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "http://localhost:8000/webhook" -Method Post -Body $body -ContentType "application/json"
 ```
 
 ## Configuración en Dialogflow
